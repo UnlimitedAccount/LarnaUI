@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <title>Mini Klarna Wallet</title>
+  <title>Klarna Deposito Flessibile</title>
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -22,6 +22,12 @@
       max-width: 420px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.5);
       border: 1px solid #1f2937;
+      text-align: center;
+    }
+    img.logo {
+      width: 120px;
+      margin-bottom: 20px;
+      filter: brightness(0) invert(1);
     }
     h1, h2 {
       margin: 0 0 16px;
@@ -31,6 +37,7 @@
       margin-bottom: 4px;
       font-size: 14px;
       color: #9ca3af;
+      text-align: left;
     }
     input {
       width: 100%;
@@ -68,7 +75,12 @@
     .wallet-balance {
       font-size: 32px;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+    }
+    .interest {
+      font-size: 13px;
+      color: #22c55e;
+      margin-bottom: 16px;
     }
     .wallet-label {
       font-size: 13px;
@@ -91,6 +103,7 @@
       border-top: 1px solid #111827;
       padding-top: 12px;
       font-size: 14px;
+      text-align: left;
     }
     .tx {
       display: flex;
@@ -103,9 +116,6 @@
     .tx-amount.plus {
       color: #22c55e;
     }
-    .tx-amount.minus {
-      color: #f97316;
-    }
     .logout {
       margin-top: 16px;
       background: #111827;
@@ -115,28 +125,36 @@
 </head>
 <body>
   <div class="card">
+
+    <!-- LOGO -->
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Klarna_Logo_black.svg" alt="Logo">
+
     <!-- LOGIN -->
     <div id="login-view">
-      <h1>Accedi al tuo Deposito</h1>
+      <h1>Accedi al tuo Wallet</h1>
       <p style="font-size:13px;color:#9ca3af;margin-bottom:16px;">
-        Modifica username/password nel codice se vuoi.
+        Demo locale. Modifica username/password nel codice se vuoi.
       </p>
       <div class="error" id="login-error" style="display:none;"></div>
       <label for="username">Username</label>
-      <input id="username" type="text" placeholder="Username" />
+      <input id="username" type="text" placeholder="es. demo" />
       <label for="password">Password</label>
-      <input id="password" type="password" placeholder="Password" />
+      <input id="password" type="password" placeholder="es. password123" />
       <button id="login-btn">Entra</button>
     </div>
 
     <!-- WALLET -->
     <div id="wallet-view" style="display:none;">
       <h2>Ciao, <span id="user-name"></span></h2>
+
       <div class="wallet-label">Saldo disponibile</div>
       <div class="wallet-balance" id="wallet-balance">€ 0,00</div>
 
+      <!-- INTERESSI 1,85% -->
+      <div class="interest">Interesse annuo: 1,85%</div>
+
       <div class="row">
-        <input id="amount" type="number" min="1" step="1" placeholder="Importo da aggiungere" />
+        <input id="amount" type="number" min="1" step="1" placeholder="Importo in €" />
         <button id="add-btn" style="width:auto;white-space:nowrap;">Aggiungi</button>
       </div>
 
@@ -150,10 +168,9 @@
 
   <script>
     // 🔐 CREDENZIALI DEMO (modifica qui)
-    const VALID_USERNAME = "lino.roberta13711@gmail.com";
-    const VALID_PASSWORD = "R0b3rt4Kl4rn4!@";
+    const VALID_USERNAME = "demo";
+    const VALID_PASSWORD = "password123";
 
-    // Stato semplice in memoria
     let balance = 0;
     let txs = [];
 
@@ -217,9 +234,8 @@
       txs.forEach(tx => {
         const div = document.createElement("div");
         div.className = "tx";
-        const label = tx.type === "DEPOSIT" ? "Ricarica" : "Movimento";
         div.innerHTML = `
-          <span>${label} • <span style="color:#6b7280;font-size:12px;">${tx.date}</span></span>
+          <span>Ricarica • <span style="color:#6b7280;font-size:12px;">${tx.date}</span></span>
           <span class="tx-amount plus">+ € ${tx.amount.toFixed(2).replace(".", ",")}</span>
         `;
         txContainer.appendChild(div);
