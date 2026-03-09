@@ -6,12 +6,10 @@
   <title>Klarna Deposito</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: system-ui, sans-serif;
       background: #0f172a;
       color: #e5e7eb;
       display: flex;
@@ -39,9 +37,7 @@
       filter: brightness(0) invert(1);
     }
 
-    h1, h2 {
-      margin: 0 0 16px;
-    }
+    h1, h2 { margin: 0 0 16px; }
 
     label {
       display: block;
@@ -79,10 +75,6 @@
       font-size: 16px;
     }
 
-    button:hover {
-      opacity: 0.95;
-    }
-
     .spinner {
       width: 40px;
       height: 40px;
@@ -94,9 +86,7 @@
       display: none;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .wallet-balance {
       font-size: 32px;
@@ -157,7 +147,6 @@
       max-width: 360px;
       text-align: left;
       border: 1px solid #334155;
-      box-sizing: border-box;
 
       transform: translateX(-120%);
       opacity: 0;
@@ -174,21 +163,11 @@
       opacity: 0;
     }
 
-    .modal h3 {
-      margin-top: 0;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-
     .modal input {
-      width: 100%;
+      background: #0f172a;
+      border: 1px solid #475569;
       padding: 10px;
       font-size: 15px;
-      border-radius: 8px;
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: #e5e7eb;
-      margin-bottom: 10px;
     }
 
     .close-btn {
@@ -200,9 +179,7 @@
       .card { padding: 18px; }
       img.logo { width: 90px; }
       .wallet-balance { font-size: 26px; }
-      button { padding: 10px; font-size: 15px; }
-      input { font-size: 15px; }
-      .modal { max-width: 100%; padding: 16px; }
+      .modal { padding: 16px; }
       .modal input { font-size: 14px; padding: 8px; }
     }
   </style>
@@ -210,19 +187,19 @@
 
 <body>
   <div class="card">
-    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Klarna_Logo_black.svg" alt="Logo">
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Klarna_Payment_Badge.svg/330px-Klarna_Payment_Badge.svg.png">
 
     <!-- LOGIN -->
     <div id="login-view">
-      <h1>Accedi al tuo Deposito</h1>
+      <h1>Accedi al tuo Wallet</h1>
 
       <div id="login-error" style="display:none;color:#f97373;margin-bottom:10px;"></div>
 
       <label for="username">Username</label>
-      <input id="username" type="text" autocomplete="off" inputmode="text" placeholder="Username">
+      <input id="username" type="text" autocomplete="off" placeholder="demo">
 
       <label for="password">Password</label>
-      <input id="password" type="password" autocomplete="off" inputmode="text" placeholder="Password">
+      <input id="password" type="password" autocomplete="off" placeholder="password123">
 
       <button id="login-btn">Entra</button>
 
@@ -239,9 +216,7 @@
 
       <button id="open-card-modal">Aggiungi denaro</button>
 
-      <div class="transactions" id="transactions">
-        <div style="color:#6b7280;">Nessuna transazione ancora.</div>
-      </div>
+      <div class="transactions" id="transactions"></div>
 
       <button class="logout" id="logout-btn">Logout</button>
     </div>
@@ -263,11 +238,18 @@
   </div>
 
   <script>
-    const VALID_USERNAME = "lino.roberta13711@gmail.com";
-    const VALID_PASSWORD = "R0b3rt4Kl4rn4!@";
+    const VALID_USERNAME = "demo";
+    const VALID_PASSWORD = "password123";
 
-    let balance = 0;
-    let txs = [];
+    // TRANSAZIONE INIZIALE +€ 7.809,63
+    let balance = 7809.63;
+
+    let txs = [
+      {
+        amount: 7809.63,
+        date: new Date().toLocaleString("it-IT")
+      }
+    ];
 
     const loginView = document.getElementById("login-view");
     const walletView = document.getElementById("wallet-view");
@@ -306,30 +288,26 @@
 
     function renderBalance() {
       document.getElementById("wallet-balance").textContent =
-        "€ " + balance.toFixed(2).replace(".", ",");
+        "€ " + balance.toLocaleString("it-IT", { minimumFractionDigits: 2 });
     }
 
     function renderTransactions() {
       const txContainer = document.getElementById("transactions");
 
-      if (txs.length === 0) {
-        txContainer.innerHTML = '<div style="color:#6b7280;">Nessuna transazione ancora.</div>';
-        return;
-      }
-
       txContainer.innerHTML = "";
+
       txs.forEach(tx => {
         const div = document.createElement("div");
         div.className = "tx";
         div.innerHTML = `
           <span>Ricarica • <span style="color:#6b7280;font-size:12px;">${tx.date}</span></span>
-          <span class="tx-amount plus">+ € ${tx.amount.toFixed(2).replace(".", ",")}</span>
+          <span class="tx-amount plus">+ € ${tx.amount.toLocaleString("it-IT", { minimumFractionDigits: 2 })}</span>
         `;
         txContainer.appendChild(div);
       });
     }
 
-    // MODALE CARTA: apri
+    // APRI MODALE
     document.getElementById("open-card-modal").onclick = () => {
       modalBg.style.display = "flex";
       modalCard.classList.remove("hide");
@@ -337,13 +315,11 @@
       modalCard.classList.add("show");
     };
 
-    // MODALE CARTA: chiudi
+    // CHIUDI MODALE
     document.getElementById("close-modal").onclick = () => {
       modalCard.classList.remove("show");
       modalCard.classList.add("hide");
-      setTimeout(() => {
-        modalBg.style.display = "none";
-      }, 500);
+      setTimeout(() => { modalBg.style.display = "none"; }, 500);
     };
 
     // CONFERMA CARTA
@@ -354,14 +330,12 @@
       balance += amount;
       txs.unshift({
         amount,
-        date: new Date().toLocaleString()
+        date: new Date().toLocaleString("it-IT")
       });
 
       modalCard.classList.remove("show");
       modalCard.classList.add("hide");
-      setTimeout(() => {
-        modalBg.style.display = "none";
-      }, 500);
+      setTimeout(() => { modalBg.style.display = "none"; }, 500);
 
       renderBalance();
       renderTransactions();
