@@ -7,7 +7,7 @@
 
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: system-ui, sans-serif;
       background: #0f172a;
       color: #e5e7eb;
       display: flex;
@@ -35,13 +35,6 @@
       filter: brightness(0) invert(1);
     }
 
-    .loading {
-      font-size: 18px;
-      margin-top: 20px;
-      color: #93c5fd;
-      display: none;
-    }
-
     .spinner {
       width: 40px;
       height: 40px;
@@ -53,21 +46,7 @@
       display: none;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    h1, h2 {
-      margin: 0 0 16px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 14px;
-      color: #9ca3af;
-      text-align: left;
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     input {
       width: 100%;
@@ -77,7 +56,6 @@
       background: #020617;
       color: #e5e7eb;
       margin-bottom: 12px;
-      box-sizing: border-box;
       font-size: 16px;
     }
 
@@ -105,19 +83,6 @@
       margin-bottom: 16px;
     }
 
-    .wallet-label {
-      font-size: 13px;
-      color: #9ca3af;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .row {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
     .transactions {
       margin-top: 16px;
       max-height: 200px;
@@ -134,23 +99,42 @@
       margin-bottom: 6px;
     }
 
-    .tx-amount.plus {
-      color: #22c55e;
-      font-weight: 600;
+    /* MODALE CARTA */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
-    .logout {
-      margin-top: 16px;
-      background: #111827;
-      border: 1px solid #374151;
+    .modal {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 360px;
+      text-align: left;
+      border: 1px solid #334155;
+    }
+
+    .modal h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .close-btn {
+      background: #475569;
+      margin-top: 10px;
     }
 
     @media (max-width: 480px) {
       .card { padding: 18px; }
       img.logo { width: 90px; }
       .wallet-balance { font-size: 26px; }
-      button { padding: 10px; font-size: 15px; }
-      input { font-size: 15px; }
     }
   </style>
 </head>
@@ -158,46 +142,54 @@
 <body>
   <div class="card">
 
-    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Klarna_Logo_black.svg" alt="Logo">
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Klarna_Logo_black.svg">
 
     <!-- LOGIN -->
     <div id="login-view">
       <h1>Accedi al tuo Wallet</h1>
 
-      <div class="error" id="login-error" style="display:none;color:#f97373;font-size:14px;margin-bottom:10px;"></div>
+      <div id="login-error" style="display:none;color:#f97373;margin-bottom:10px;"></div>
 
-      <label for="username">Username</label>
-      <input id="username" type="text" placeholder="es. demo" />
-
-      <label for="password">Password</label>
-      <input id="password" type="password" placeholder="es. password123" />
+      <input id="username" type="text" placeholder="Username: demo">
+      <input id="password" type="password" placeholder="Password: password123">
 
       <button id="login-btn">Entra</button>
 
-      <!-- LOADING -->
       <div class="spinner" id="spinner"></div>
-      <div class="loading" id="loading-text">Attendere…</div>
+      <div id="loading-text" style="display:none;color:#93c5fd;">Attendere…</div>
     </div>
 
     <!-- WALLET -->
     <div id="wallet-view" style="display:none;">
       <h2>Ciao, <span id="user-name"></span></h2>
 
-      <div class="wallet-label">Saldo disponibile</div>
       <div class="wallet-balance" id="wallet-balance">€ 0,00</div>
-
       <div class="interest">Interesse annuo: 1,85%</div>
 
-      <div class="row">
-        <input id="amount" type="number" min="1" step="1" placeholder="Importo in €" />
-        <button id="add-btn" style="width:auto;white-space:nowrap;">Aggiungi</button>
-      </div>
+      <button id="open-card-modal">Aggiungi denaro</button>
 
       <div class="transactions" id="transactions">
         <div style="color:#6b7280;">Nessuna transazione ancora.</div>
       </div>
 
-      <button class="logout" id="logout-btn">Logout</button>
+      <button class="logout" id="logout-btn" style="margin-top:16px;background:#111827;border:1px solid #374151;">
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- MODALE CARTA -->
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal">
+      <h3>Aggiungi denaro con carta</h3>
+
+      <input id="card-number" type="text" placeholder="Numero carta">
+      <input id="card-exp" type="text" placeholder="Scadenza (MM/AA)">
+      <input id="card-cvv" type="text" placeholder="CVV">
+      <input id="card-amount" type="number" placeholder="Importo in €">
+
+      <button id="confirm-card">Conferma</button>
+      <button class="close-btn" id="close-modal">Annulla</button>
     </div>
   </div>
 
@@ -210,7 +202,6 @@
 
     const loginView = document.getElementById("login-view");
     const walletView = document.getElementById("wallet-view");
-    const loginError = document.getElementById("login-error");
     const spinner = document.getElementById("spinner");
     const loadingText = document.getElementById("loading-text");
 
@@ -219,8 +210,6 @@
       const p = document.getElementById("password").value;
 
       if (u === VALID_USERNAME && p === VALID_PASSWORD) {
-        loginError.style.display = "none";
-
         spinner.style.display = "block";
         loadingText.style.display = "block";
 
@@ -237,32 +226,9 @@
         }, 5000);
 
       } else {
-        loginError.textContent = "Credenziali non valide.";
-        loginError.style.display = "block";
+        document.getElementById("login-error").textContent = "Credenziali non valide.";
+        document.getElementById("login-error").style.display = "block";
       }
-    });
-
-    document.getElementById("add-btn").addEventListener("click", () => {
-      const amountInput = document.getElementById("amount");
-      const value = parseFloat(amountInput.value);
-      if (isNaN(value) || value <= 0) return;
-
-      balance += value;
-      txs.unshift({
-        type: "DEPOSIT",
-        amount: value,
-        date: new Date().toLocaleString()
-      });
-
-      amountInput.value = "";
-      renderBalance();
-      renderTransactions();
-    });
-
-    document.getElementById("logout-btn").addEventListener("click", () => {
-      walletView.style.display = "none";
-      loginView.style.display = "block";
-      document.getElementById("password").value = "";
     });
 
     function renderBalance() {
@@ -284,11 +250,43 @@
         div.className = "tx";
         div.innerHTML = `
           <span>Ricarica • <span style="color:#6b7280;font-size:12px;">${tx.date}</span></span>
-          <span class="tx-amount plus">+ € ${tx.amount.toFixed(2).replace(".", ",")}</span>
+          <span style="color:#22c55e;font-weight:600;">+ € ${tx.amount.toFixed(2).replace(".", ",")}</span>
         `;
         txContainer.appendChild(div);
       });
     }
+
+    // MODALE CARTA
+    const modalBg = document.getElementById("modal-bg");
+
+    document.getElementById("open-card-modal").onclick = () => {
+      modalBg.style.display = "flex";
+    };
+
+    document.getElementById("close-modal").onclick = () => {
+      modalBg.style.display = "none";
+    };
+
+    document.getElementById("confirm-card").onclick = () => {
+      const amount = parseFloat(document.getElementById("card-amount").value);
+
+      if (!amount || amount <= 0) return;
+
+      balance += amount;
+      txs.unshift({
+        amount,
+        date: new Date().toLocaleString()
+      });
+
+      modalBg.style.display = "none";
+      renderBalance();
+      renderTransactions();
+    };
+
+    document.getElementById("logout-btn").onclick = () => {
+      walletView.style.display = "none";
+      loginView.style.display = "block";
+    };
   </script>
 </body>
 </html>
