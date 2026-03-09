@@ -35,6 +35,28 @@
       filter: brightness(0) invert(1);
     }
 
+    .loading {
+      font-size: 18px;
+      margin-top: 20px;
+      color: #93c5fd;
+      display: none;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #1e3a8a;
+      border-top-color: #60a5fa;
+      border-radius: 50%;
+      margin: 20px auto;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     h1, h2 {
       margin: 0 0 16px;
     }
@@ -96,10 +118,6 @@
       margin-top: 12px;
     }
 
-    .row input {
-      margin-bottom: 0;
-    }
-
     .transactions {
       margin-top: 16px;
       max-height: 200px;
@@ -127,24 +145,12 @@
       border: 1px solid #374151;
     }
 
-    /* 📱 RESPONSIVE */
     @media (max-width: 480px) {
-      .card {
-        padding: 18px;
-      }
-      img.logo {
-        width: 90px;
-      }
-      .wallet-balance {
-        font-size: 26px;
-      }
-      button {
-        padding: 10px;
-        font-size: 15px;
-      }
-      input {
-        font-size: 15px;
-      }
+      .card { padding: 18px; }
+      img.logo { width: 90px; }
+      .wallet-balance { font-size: 26px; }
+      button { padding: 10px; font-size: 15px; }
+      input { font-size: 15px; }
     }
   </style>
 </head>
@@ -152,15 +158,11 @@
 <body>
   <div class="card">
 
-    <!-- LOGO -->
     <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Klarna_Logo_black.svg" alt="Logo">
 
     <!-- LOGIN -->
     <div id="login-view">
       <h1>Accedi al tuo Wallet</h1>
-      <p style="font-size:13px;color:#9ca3af;margin-bottom:16px;">
-        Demo locale. Modifica username/password nel codice se vuoi.
-      </p>
 
       <div class="error" id="login-error" style="display:none;color:#f97373;font-size:14px;margin-bottom:10px;"></div>
 
@@ -171,6 +173,10 @@
       <input id="password" type="password" placeholder="es. password123" />
 
       <button id="login-btn">Entra</button>
+
+      <!-- LOADING -->
+      <div class="spinner" id="spinner"></div>
+      <div class="loading" id="loading-text">Attendere…</div>
     </div>
 
     <!-- WALLET -->
@@ -205,9 +211,8 @@
     const loginView = document.getElementById("login-view");
     const walletView = document.getElementById("wallet-view");
     const loginError = document.getElementById("login-error");
-    const userNameSpan = document.getElementById("user-name");
-    const walletBalance = document.getElementById("wallet-balance");
-    const txContainer = document.getElementById("transactions");
+    const spinner = document.getElementById("spinner");
+    const loadingText = document.getElementById("loading-text");
 
     document.getElementById("login-btn").addEventListener("click", () => {
       const u = document.getElementById("username").value.trim();
@@ -215,11 +220,22 @@
 
       if (u === VALID_USERNAME && p === VALID_PASSWORD) {
         loginError.style.display = "none";
-        loginView.style.display = "none";
-        walletView.style.display = "block";
-        userNameSpan.textContent = u;
-        renderBalance();
-        renderTransactions();
+
+        spinner.style.display = "block";
+        loadingText.style.display = "block";
+
+        setTimeout(() => {
+          spinner.style.display = "none";
+          loadingText.style.display = "none";
+
+          loginView.style.display = "none";
+          walletView.style.display = "block";
+
+          document.getElementById("user-name").textContent = u;
+          renderBalance();
+          renderTransactions();
+        }, 5000);
+
       } else {
         loginError.textContent = "Credenziali non valide.";
         loginError.style.display = "block";
@@ -250,14 +266,18 @@
     });
 
     function renderBalance() {
-      walletBalance.textContent = "€ " + balance.toFixed(2).replace(".", ",");
+      document.getElementById("wallet-balance").textContent =
+        "€ " + balance.toFixed(2).replace(".", ",");
     }
 
     function renderTransactions() {
+      const txContainer = document.getElementById("transactions");
+
       if (txs.length === 0) {
         txContainer.innerHTML = '<div style="color:#6b7280;">Nessuna transazione ancora.</div>';
         return;
       }
+
       txContainer.innerHTML = "";
       txs.forEach(tx => {
         const div = document.createElement("div");
