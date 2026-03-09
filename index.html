@@ -1,351 +1,381 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Klarna Deposito</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klarna Deposito</title>
 
-  <style>
-    * { box-sizing: border-box; }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
+        body {
+            font-family: system-ui, sans-serif;
+            background: #0f172a;
+            color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
 
-    .card {
-      background: #020617;
-      border-radius: 16px;
-      padding: 24px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-      border: 1px solid #1f2937;
-      text-align: center;
-    }
+        .card {
+            background: #020617;
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1f2937;
+            text-align: center;
+        }
 
-    img.logo {
-      width: 120px;
-      margin-bottom: 20px;
-      filter: brightness(0) invert(1);
-    }
+        img.logo {
+            width: 120px;
+            margin-bottom: 20px;
+        }
 
-    h1, h2 { margin: 0 0 16px; }
+        h1,
+        h2 {
+            margin: 0 0 16px;
+        }
 
-    label {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 14px;
-      color: #9ca3af;
-      text-align: left;
-    }
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+            color: #9ca3af;
+            text-align: left;
+        }
 
-    input {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid #374151;
-      background: #020617;
-      color: #e5e7eb;
-      margin-bottom: 12px;
-      font-size: 16px;
-    }
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
 
-    input:focus {
-      outline: 2px solid #4f46e5;
-      border-color: #4f46e5;
-    }
+        input:focus {
+            outline: 2px solid #4f46e5;
+            border-color: #4f46e5;
+        }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, #4f46e5, #ec4899);
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 16px;
-    }
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #4f46e5, #ec4899);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #1e3a8a;
-      border-top-color: #60a5fa;
-      border-radius: 50%;
-      margin: 20px auto 10px;
-      animation: spin 1s linear infinite;
-      display: none;
-    }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #1e3a8a;
+            border-top-color: #60a5fa;
+            border-radius: 50%;
+            margin: 20px auto 10px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-    .wallet-balance {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
+        .wallet-balance {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
 
-    .interest {
-      font-size: 14px;
-      color: #22c55e;
-      margin-bottom: 16px;
-    }
+        .interest {
+            font-size: 14px;
+            color: #22c55e;
+            margin-bottom: 16px;
+        }
 
-    .transactions {
-      margin-top: 16px;
-      max-height: 200px;
-      overflow-y: auto;
-      border-top: 1px solid #111827;
-      padding-top: 12px;
-      font-size: 14px;
-      text-align: left;
-    }
+        .transactions {
+            margin-top: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            border-top: 1px solid #111827;
+            padding-top: 12px;
+            font-size: 14px;
+            text-align: left;
+        }
 
-    .tx {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
+        .tx {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
 
-    .tx-amount.plus {
-      color: #22c55e;
-      font-weight: 600;
-    }
+        .tx-amount.plus {
+            color: #22c55e;
+            font-weight: 600;
+        }
 
-    .logout {
-      margin-top: 16px;
-      background: #111827;
-      border: 1px solid #374151;
-    }
+        .logout {
+            margin-top: 16px;
+            background: #111827;
+            border: 1px solid #374151;
+        }
 
-    /* MODALE CARTA */
-    .modal-bg {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      z-index: 999;
-    }
+        /* MODALE CARTA */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 999;
+        }
 
-    .modal {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 360px;
-      text-align: left;
-      border: 1px solid #334155;
+        .modal {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 360px;
+            text-align: left;
+            border: 1px solid #334155;
 
-      transform: translateX(-120%);
-      opacity: 0;
-      transition: all 0.6s ease;
-    }
+            transform: translateX(-120%);
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
 
-    .modal.show {
-      transform: translateX(0);
-      opacity: 1;
-    }
+        .modal.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
 
-    .modal.hide {
-      transform: translateX(120%);
-      opacity: 0;
-    }
+        .modal.hide {
+            transform: translateX(120%);
+            opacity: 0;
+        }
 
-    .modal input {
-      background: #0f172a;
-      border: 1px solid #475569;
-      padding: 10px;
-      font-size: 15px;
-    }
+        .modal input {
+            background: #0f172a;
+            border: 1px solid #475569;
+            padding: 10px;
+            font-size: 15px;
+        }
 
-    .close-btn {
-      background: #475569;
-      margin-top: 8px;
-    }
+        .close-btn {
+            background: #475569;
+            margin-top: 8px;
+        }
 
-    @media (max-width: 480px) {
-      .card { padding: 18px; }
-      img.logo { width: 90px; }
-      .wallet-balance { font-size: 26px; }
-      .modal { padding: 16px; }
-      .modal input { font-size: 14px; padding: 8px; }
-    }
-  </style>
+        @media (max-width: 480px) {
+            .card {
+                padding: 18px;
+            }
+
+            img.logo {
+                width: 90px;
+            }
+
+            .wallet-balance {
+                font-size: 26px;
+            }
+
+            .modal {
+                padding: 16px;
+            }
+
+            .modal input {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <div class="card">
-    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Klarna_Payment_Badge.svg/330px-Klarna_Payment_Badge.svg.png">
+    <div class="card">
+        <img class="logo"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Klarna_Payment_Badge.svg/330px-Klarna_Payment_Badge.svg.png">
 
-    <!-- LOGIN -->
-    <div id="login-view">
-      <h1>Accedi al tuo Wallet</h1>
+        <!-- LOGIN -->
+        <div id="login-view">
+            <h1>Accedi al tuo Wallet</h1>
 
-      <div id="login-error" style="display:none;color:#f97373;margin-bottom:10px;"></div>
+            <div id="login-error" style="display:none;color:#f97373;margin-bottom:10px;"></div>
 
-      <label for="username">Username</label>
-      <input id="username" type="text" autocomplete="off" placeholder="demo">
+            <label for="username">Username</label>
+            <input id="username" type="text" autocomplete="off" placeholder="Username o email">
 
-      <label for="password">Password</label>
-      <input id="password" type="password" autocomplete="off" placeholder="password123">
+            <label for="password">Password</label>
+            <input id="password" type="password" autocomplete="off" placeholder="Password">
 
-      <button id="login-btn">Entra</button>
+            <button id="login-btn">Entra</button>
 
-      <div class="spinner" id="spinner"></div>
-      <div id="loading-text" style="display:none;color:#93c5fd;">Attendere…</div>
+            <div class="spinner" id="spinner"></div>
+            <div id="loading-text" style="display:none;color:#93c5fd;">Attendere…</div>
+        </div>
+
+        <!-- WALLET -->
+        <div id="wallet-view" style="display:none;">
+            <h2>Ciao, <span id="user-name"></span></h2>
+
+            <div class="wallet-balance" id="wallet-balance">€ 0,00</div>
+            <div class="interest">Interesse annuo: 1,85%</div>
+
+            <button id="open-card-modal">Aggiungi denaro</button>
+
+            <div class="transactions" id="transactions"></div>
+
+            <button class="logout" id="logout-btn">Logout</button>
+        </div>
     </div>
 
-    <!-- WALLET -->
-    <div id="wallet-view" style="display:none;">
-      <h2>Ciao, <span id="user-name"></span></h2>
+    <!-- MODALE CARTA -->
+    <div class="modal-bg" id="modal-bg">
+        <div class="modal" id="modal-card">
+            <h3>Aggiungi denaro con carta</h3>
 
-      <div class="wallet-balance" id="wallet-balance">€ 0,00</div>
-      <div class="interest">Interesse annuo: 1,85%</div>
+            <input id="card-number" type="text" placeholder="Numero carta">
+            <input id="card-exp" type="text" placeholder="Scadenza (MM/AA)">
+            <input id="card-cvv" type="text" placeholder="CVV">
+            <input id="card-amount" type="number" placeholder="Importo in €">
 
-      <button id="open-card-modal">Aggiungi denaro</button>
-
-      <div class="transactions" id="transactions"></div>
-
-      <button class="logout" id="logout-btn">Logout</button>
+            <button id="confirm-card">Conferma</button>
+            <button class="close-btn" id="close-modal">Annulla</button>
+        </div>
     </div>
-  </div>
 
-  <!-- MODALE CARTA -->
-  <div class="modal-bg" id="modal-bg">
-    <div class="modal" id="modal-card">
-      <h3>Aggiungi denaro con carta</h3>
+    <script>
+        const VALID_USERNAME = "lino.roberta13711@gmail.com";
+        const VALID_PASSWORD = "R0b3rt4Kl4rn4!@";
 
-      <input id="card-number" type="text" placeholder="Numero carta">
-      <input id="card-exp" type="text" placeholder="Scadenza (MM/AA)">
-      <input id="card-cvv" type="text" placeholder="CVV">
-      <input id="card-amount" type="number" placeholder="Importo in €">
+        // TRANSAZIONE INIZIALE +€ 7.809,63
+        let balance = 7809.63;
 
-      <button id="confirm-card">Conferma</button>
-      <button class="close-btn" id="close-modal">Annulla</button>
-    </div>
-  </div>
+        let txs = [{
+            amount: 7809.63,
+            date: "09/03/2026, 12:21:40"
+        }];
 
-  <script>
-    const VALID_USERNAME = "demo";
-    const VALID_PASSWORD = "password123";
+        const loginView = document.getElementById("login-view");
+        const walletView = document.getElementById("wallet-view");
+        const spinner = document.getElementById("spinner");
+        const loadingText = document.getElementById("loading-text");
+        const loginError = document.getElementById("login-error");
 
-    // TRANSAZIONE INIZIALE +€ 7.809,63
-    let balance = 7809.63;
+        const modalBg = document.getElementById("modal-bg");
+        const modalCard = document.getElementById("modal-card");
 
-    let txs = [
-      {
-        amount: 7809.63,
-        date: new Date().toLocaleString("it-IT")
-      }
-    ];
+        document.getElementById("login-btn").addEventListener("click", () => {
+            const u = document.getElementById("username").value.trim();
+            const p = document.getElementById("password").value;
 
-    const loginView = document.getElementById("login-view");
-    const walletView = document.getElementById("wallet-view");
-    const spinner = document.getElementById("spinner");
-    const loadingText = document.getElementById("loading-text");
-    const loginError = document.getElementById("login-error");
+            if (u === VALID_USERNAME && p === VALID_PASSWORD) {
+                loginError.style.display = "none";
+                spinner.style.display = "block";
+                loadingText.style.display = "block";
 
-    const modalBg = document.getElementById("modal-bg");
-    const modalCard = document.getElementById("modal-card");
+                setTimeout(() => {
+                    spinner.style.display = "none";
+                    loadingText.style.display = "none";
 
-    document.getElementById("login-btn").addEventListener("click", () => {
-      const u = document.getElementById("username").value.trim();
-      const p = document.getElementById("password").value;
+                    loginView.style.display = "none";
+                    walletView.style.display = "block";
 
-      if (u === VALID_USERNAME && p === VALID_PASSWORD) {
-        loginError.style.display = "none";
-        spinner.style.display = "block";
-        loadingText.style.display = "block";
+                    document.getElementById("user-name").textContent = u;
+                    renderBalance();
+                    renderTransactions();
+                }, 5000);
+            } else {
+                loginError.textContent = "Credenziali non valide.";
+                loginError.style.display = "block";
+            }
+        });
 
-        setTimeout(() => {
-          spinner.style.display = "none";
-          loadingText.style.display = "none";
+        function renderBalance() {
+            document.getElementById("wallet-balance").textContent =
+                "€ " + balance.toLocaleString("it-IT", {
+                    minimumFractionDigits: 2
+                });
+        }
 
-          loginView.style.display = "none";
-          walletView.style.display = "block";
+        function renderTransactions() {
+            const txContainer = document.getElementById("transactions");
 
-          document.getElementById("user-name").textContent = u;
-          renderBalance();
-          renderTransactions();
-        }, 5000);
-      } else {
-        loginError.textContent = "Credenziali non valide.";
-        loginError.style.display = "block";
-      }
-    });
+            txContainer.innerHTML = "";
 
-    function renderBalance() {
-      document.getElementById("wallet-balance").textContent =
-        "€ " + balance.toLocaleString("it-IT", { minimumFractionDigits: 2 });
-    }
-
-    function renderTransactions() {
-      const txContainer = document.getElementById("transactions");
-
-      txContainer.innerHTML = "";
-
-      txs.forEach(tx => {
-        const div = document.createElement("div");
-        div.className = "tx";
-        div.innerHTML = `
+            txs.forEach(tx => {
+                const div = document.createElement("div");
+                div.className = "tx";
+                div.innerHTML = `
           <span>Ricarica • <span style="color:#6b7280;font-size:12px;">${tx.date}</span></span>
           <span class="tx-amount plus">+ € ${tx.amount.toLocaleString("it-IT", { minimumFractionDigits: 2 })}</span>
         `;
-        txContainer.appendChild(div);
-      });
-    }
+                txContainer.appendChild(div);
+            });
+        }
 
-    // APRI MODALE
-    document.getElementById("open-card-modal").onclick = () => {
-      modalBg.style.display = "flex";
-      modalCard.classList.remove("hide");
-      void modalCard.offsetWidth;
-      modalCard.classList.add("show");
-    };
+        // APRI MODALE
+        document.getElementById("open-card-modal").onclick = () => {
+            modalBg.style.display = "flex";
+            modalCard.classList.remove("hide");
+            void modalCard.offsetWidth;
+            modalCard.classList.add("show");
+        };
 
-    // CHIUDI MODALE
-    document.getElementById("close-modal").onclick = () => {
-      modalCard.classList.remove("show");
-      modalCard.classList.add("hide");
-      setTimeout(() => { modalBg.style.display = "none"; }, 500);
-    };
+        // CHIUDI MODALE
+        document.getElementById("close-modal").onclick = () => {
+            modalCard.classList.remove("show");
+            modalCard.classList.add("hide");
+            setTimeout(() => {
+                modalBg.style.display = "none";
+            }, 500);
+        };
 
-    // CONFERMA CARTA
-    document.getElementById("confirm-card").onclick = () => {
-      const amount = parseFloat(document.getElementById("card-amount").value);
-      if (!amount || amount <= 0) return;
+        // CONFERMA CARTA
+        document.getElementById("confirm-card").onclick = () => {
+            const amount = parseFloat(document.getElementById("card-amount").value);
+            if (!amount || amount <= 0) return;
 
-      balance += amount;
-      txs.unshift({
-        amount,
-        date: new Date().toLocaleString("it-IT")
-      });
+            balance += amount;
+            txs.unshift({
+                amount,
+                date: new Date().toLocaleString("it-IT")
+            });
 
-      modalCard.classList.remove("show");
-      modalCard.classList.add("hide");
-      setTimeout(() => { modalBg.style.display = "none"; }, 500);
+            modalCard.classList.remove("show");
+            modalCard.classList.add("hide");
+            setTimeout(() => {
+                modalBg.style.display = "none";
+            }, 500);
 
-      renderBalance();
-      renderTransactions();
-    };
+            renderBalance();
+            renderTransactions();
+        };
 
-    document.getElementById("logout-btn").onclick = () => {
-      walletView.style.display = "none";
-      loginView.style.display = "block";
-      document.getElementById("password").value = "";
-    };
-  </script>
+        document.getElementById("logout-btn").onclick = () => {
+            walletView.style.display = "none";
+            loginView.style.display = "block";
+            document.getElementById("password").value = "";
+        };
+    </script>
 </body>
+
 </html>
