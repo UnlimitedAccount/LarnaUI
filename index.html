@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Klarna Wallet</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #020617;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      border: 1px solid #1f2937;
+    }
+    h1, h2 {
+      margin: 0 0 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+    input:focus {
+      outline: 2px solid #4f46e5;
+      border-color: #4f46e5;
+    }
+    button {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #4f46e5, #ec4899);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .error {
+      color: #f97373;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .wallet-balance {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .wallet-label {
+      font-size: 13px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .row input {
+      margin-bottom: 0;
+    }
+    .transactions {
+      margin-top: 16px;
+      max-height: 160px;
+      overflow-y: auto;
+      border-top: 1px solid #111827;
+      padding-top: 12px;
+      font-size: 14px;
+    }
+    .tx {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .tx-amount {
+      font-weight: 600;
+    }
+    .tx-amount.plus {
+      color: #22c55e;
+    }
+    .tx-amount.minus {
+      color: #f97316;
+    }
+    .logout {
+      margin-top: 16px;
+      background: #111827;
+      border: 1px solid #374151;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <!-- LOGIN -->
+    <div id="login-view">
+      <h1>Accedi al tuo Wallet</h1>
+      <p style="font-size:13px;color:#9ca3af;margin-bottom:16px;">
+        Demo locale. Modifica username/password nel codice se vuoi.
+      </p>
+      <div class="error" id="login-error" style="display:none;"></div>
+      <label for="username">Username</label>
+      <input id="username" type="text" placeholder="es. demo" />
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="es. password123" />
+      <button id="login-btn">Entra</button>
+    </div>
+
+    <!-- WALLET -->
+    <div id="wallet-view" style="display:none;">
+      <h2>Ciao, <span id="user-name"></span></h2>
+      <div class="wallet-label">Saldo disponibile</div>
+      <div class="wallet-balance" id="wallet-balance">€ 0,00</div>
+
+      <div class="row">
+        <input id="amount" type="number" min="1" step="1" placeholder="Importo da aggiungere" />
+        <button id="add-btn" style="width:auto;white-space:nowrap;">Aggiungi</button>
+      </div>
+
+      <div class="transactions" id="transactions">
+        <div style="color:#6b7280;">Nessuna transazione ancora.</div>
+      </div>
+
+      <button class="logout" id="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    // 🔐 CREDENZIALI DEMO (modifica qui)
+    const VALID_USERNAME = "demo";
+    const VALID_PASSWORD = "password123";
+
+    // Stato semplice in memoria
+    let balance = 0;
+    let txs = [];
+
+    const loginView = document.getElementById("login-view");
+    const walletView = document.getElementById("wallet-view");
+    const loginError = document.getElementById("login-error");
+    const userNameSpan = document.getElementById("user-name");
+    const walletBalance = document.getElementById("wallet-balance");
+    const txContainer = document.getElementById("transactions");
+
+    document.getElementById("login-btn").addEventListener("click", () => {
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value;
+
+      if (u === VALID_USERNAME && p === VALID_PASSWORD) {
+        loginError.style.display = "none";
+        loginView.style.display = "none";
+        walletView.style.display = "block";
+        userNameSpan.textContent = u;
+        renderBalance();
+        renderTransactions();
+      } else {
+        loginError.textContent = "Credenziali non valide.";
+        loginError.style.display = "block";
+      }
+    });
+
+    document.getElementById("add-btn").addEventListener("click", () => {
+      const amountInput = document.getElementById("amount");
+      const value = parseFloat(amountInput.value);
+      if (isNaN(value) || value <= 0) return;
+
+      balance += value;
+      txs.unshift({
+        type: "DEPOSIT",
+        amount: value,
+        date: new Date().toLocaleString()
+      });
+
+      amountInput.value = "";
+      renderBalance();
+      renderTransactions();
+    });
+
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      walletView.style.display = "none";
+      loginView.style.display = "block";
+      document.getElementById("password").value = "";
+    });
+
+    function renderBalance() {
+      walletBalance.textContent = "€ " + balance.toFixed(2).replace(".", ",");
+    }
+
+    function renderTransactions() {
+      if (txs.length === 0) {
+        txContainer.innerHTML = '<div style="color:#6b7280;">Nessuna transazione ancora.</div>';
+        return;
+      }
+      txContainer.innerHTML = "";
+      txs.forEach(tx => {
+        const div = document.createElement("div");
+        div.className = "tx";
+        const label = tx.type === "DEPOSIT" ? "Ricarica" : "Movimento";
+        div.innerHTML = `
+          <span>${label} • <span style="color:#6b7280;font-size:12px;">${tx.date}</span></span>
+          <span class="tx-amount plus">+ € ${tx.amount.toFixed(2).replace(".", ",")}</span>
+        `;
+        txContainer.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
