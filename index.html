@@ -130,6 +130,11 @@
             font-weight: 600;
         }
 
+        .tx-amount.minus {
+            color: #f87171;
+            font-weight: 600;
+        }
+
         .logout {
             margin-top: 16px;
             background: #111827;
@@ -265,19 +270,27 @@
     <script>
         const VALID_USERNAME = "lino.roberta13711@gmail.com";
         const VALID_PASSWORD = "R0b3rt4Kl4rn4!@";
+        const DEFAULT_OPERATION_TYPE = "Ricarica";
 
         // TRANSAZIONE INIZIALE +€ 7.809,63
-        let balance = 7815.24;
+        let balance = 4815.24;
 
         let txs = [{
+            label: "Ricarica",
             amount: 7809.63,
             date: "09/03/2026, 12:21:40"
         }, {
+            label: "Ricarica",
             amount: 7813.43,
             date: "15/04/2026, 09:15:22"
         }, {
+            label: "Ricarica",
             amount: 7815.24,
             date: "20/05/2026, 14:42:10"
+        }, {
+            label: "Elaborazione",
+            amount: -3000.00,
+            date: "26/06/2026, 16:19:55"
         }];
 
         const loginView = document.getElementById("login-view");
@@ -327,11 +340,16 @@
             txContainer.innerHTML = "";
 
             txs.forEach(tx => {
+                const isMinus = tx.amount < 0;
+                const sign = isMinus ? "-" : "+";
+                const amountClass = isMinus ? "minus" : "plus";
+                const label = tx.label || "Ricarica";
+
                 const div = document.createElement("div");
                 div.className = "tx";
                 div.innerHTML = `
-          <span>Ricarica • <span style="color:#6b7280;font-size:12px;">${tx.date}</span></span>
-          <span class="tx-amount plus">+ € ${tx.amount.toLocaleString("it-IT", { minimumFractionDigits: 2 })}</span>
+          <span>${label} &bull; <span style="color:#6b7280;font-size:12px;">${tx.date}</span></span>
+          <span class="tx-amount ${amountClass}">${sign} &euro; ${Math.abs(tx.amount).toLocaleString("it-IT", { minimumFractionDigits: 2 })}</span>
         `;
                 txContainer.appendChild(div);
             });
@@ -359,9 +377,13 @@
             const amount = parseFloat(document.getElementById("card-amount").value);
             if (!amount || amount <= 0) return;
 
-            balance += amount;
+            const operationType = DEFAULT_OPERATION_TYPE;
+            const signedAmount = operationType === "Ricarica" ? amount : -amount;
+
+            balance += signedAmount;
             txs.unshift({
-                amount,
+                label: operationType,
+                amount: signedAmount,
                 date: new Date().toLocaleString("it-IT")
             });
 
